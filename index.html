@@ -1,0 +1,827 @@
+import React, { useState, useEffect } from 'react';
+import { BarChart, Bar, PieChart, Pie, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
+import { ChevronRight, Home, Users, Layout, TrendingUp, DollarSign, Target, CheckCircle } from 'lucide-react';
+
+const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#d0ed57', '#a4de6c', '#8dd1e1', '#ff8042', '#00C49F', '#FFBB28', '#FF8042'];
+
+// Data for charts
+const genZMobileUsageData = [
+  { name: 'Own Smartphone', value: 90 },
+  { name: '4+ Hrs Social Media/Day', value: 50 },
+];
+
+const genZInfoSourceData = [
+  { name: 'Social Media', value: 46 },
+  { name: 'Traditional Search Engines', value: 54 },
+];
+
+const genZProductDiscoveryData = [
+  { name: 'TikTok', value: 77 },
+  { name: 'Instagram', value: 75 }, // From search results, updated from 77% in original doc
+  { name: 'YouTube', value: 80 }, // From search results, updated from original doc
+  { name: 'Snapchat', value: 69 }, // From search results
+];
+
+const genZLearningPreferenceData = [
+  { name: 'Video-Based Learning', value: 87 },
+  { name: 'Educational Content via Social Media Daily', value: 72 },
+];
+
+const cpcEducationData = [
+  { name: 'Google Search', value: 2.40 },
+  { name: 'Google Display', value: 0.47 },
+  { name: 'Facebook Ads', value: 2.11 },
+  { name: 'Google Ads (General)', value: 2.45 },
+];
+
+const cpcEcommerceData = [
+  { name: 'Google Search', value: 1.16 },
+  { name: 'Google Display', value: 0.45 },
+];
+
+const cpcRestaurantsFoodData = [
+  { name: 'Google Search', value: 2.05 },
+  { name: 'Facebook Ads', value: 1.52 }, // From search results
+  { name: 'Google Display', value: 0.63 }, // From search results
+];
+
+const cpcGeneralMobileData = [
+  { name: 'Google Ads', value: 2.32 },
+  { name: 'Facebook Ads', value: 0.63 },
+  { name: 'Instagram Ads', value: 0.55 }, // Average of 0.40-0.70
+  { name: 'TikTok Ads (Range)', value: 1.1 }, // Placeholder for range, as it varies
+];
+
+const cpcBlendedData = [
+  { name: 'Search Campaigns', value: 2.00 }, // Average of 1.50-2.50
+  { name: 'Display/Social Campaigns', value: 0.60 }, // Average of 0.40-0.80
+];
+
+
+const Section = ({ title, children, id, icon: Icon }) => (
+  <section id={id} className="mb-12 p-6 bg-white rounded-xl shadow-lg">
+    <h2 className="text-3xl font-bold text-gray-800 mb-6 flex items-center">
+      {Icon && <Icon className="mr-3 text-indigo-600" size={32} />}
+      {title}
+    </h2>
+    <div className="text-gray-700 leading-relaxed">
+      {children}
+    </div>
+  </section>
+);
+
+const ChartContainer = ({ title, children }) => (
+  <div className="bg-gray-50 p-4 rounded-lg shadow-sm mb-6">
+    <h3 className="text-xl font-semibold text-gray-800 mb-4">{title}</h3>
+    <div className="h-64">
+      {children}
+    </div>
+  </div>
+);
+
+const App = () => {
+  const [activeSection, setActiveSection] = useState('executive-summary');
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      setActiveSection(window.location.hash.substring(1) || 'executive-summary');
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    handleHashChange(); // Set initial active section
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  const navigateTo = (id) => {
+    setActiveSection(id);
+    window.location.hash = id;
+  };
+
+  const sections = [
+    { id: 'executive-summary', title: 'Executive Summary', icon: Home },
+    { id: 'gen-z-audience', title: 'Gen Z Audience & Mobile Behavior', icon: Users },
+    { id: 'landing-pages', title: 'High-Converting Mobile-First Landing Pages', icon: Layout },
+    { id: 'acquisition-funnel', title: 'Customer Acquisition Funnel & Behavior', icon: TrendingUp },
+    { id: 'cpc', title: 'Cost Per Click (CPC) Analysis', icon: DollarSign },
+    { id: 'cac-ltv', title: 'Achieving CAC:LTV Ratio of 3.5:1', icon: Target },
+    { id: 'strategy', title: 'Complete Strategy with Milestones', icon: CheckCircle },
+    { id: 'conclusion', title: 'Conclusions & Recommendations', icon: CheckCircle },
+  ];
+
+  const renderContent = () => {
+    switch (activeSection) {
+      case 'executive-summary':
+        return (
+          <Section id="executive-summary" title="Executive Summary" icon={Home}>
+            <p className="mb-4">
+              This report outlines a comprehensive mobile-first acquisition plan for Ready Set Pasta, a web application designed to teach Gen Z (ages 20-35) how to cook over 100 recipes in 30 minutes or less, using a maximum of 17 ingredients. The strategy is meticulously crafted to align with the unique digital behaviors and culinary preferences of this demographic, emphasizing mobile optimization, authentic social media engagement, and strategic micro-influencer collaborations. A core objective is to achieve and maintain a healthy Customer Acquisition Cost (CAC) to Lifetime Value (LTV) ratio of 3.5:1, ensuring sustainable growth and profitability. By focusing on highly personalized, interactive, and visually driven content, Ready Set Pasta is positioned to become the definitive resource for Gen Z seeking efficient, healthy, and accessible home cooking solutions.
+            </p>
+          </Section>
+        );
+      case 'gen-z-audience':
+        return (
+          <Section id="gen-z-audience" title="Understanding the Gen Z Audience & Their Mobile Behavior" icon={Users}>
+            <p className="mb-4">
+              Gen Z, encompassing individuals aged 20-35 for Ready Set Pasta's target demographic, represents the first truly digital-native generation. Their inherent mobile-first habits profoundly influence how they discover, engage with, and consume content, particularly concerning food and learning. A nuanced understanding of these behaviors is foundational for Ready Set Pasta's acquisition and long-term user retention.
+            </p>
+            <h3 className="text-2xl font-semibold text-gray-800 mb-4">Mobile-First Lifestyle is Non-Negotiable</h3>
+            <p className="mb-4">
+              This generation operates predominantly from their smartphones, with a striking 90% owning one and half of them dedicating at least four hours daily to social media platforms. For Gen Z, the mobile phone functions as their primary screen. This pervasive mobile usage dictates that Ready Set Pasta's web application and all associated marketing collateral must be conceived and executed with a mobile-first design philosophy, rather than merely adapting desktop versions. This approach ensures the user experience (UX) is inherently optimized for smaller screens from the outset. Furthermore, Google's practice of predominantly using mobile versions of websites for SEO ranking underscores the critical importance of this design imperative.
+            </p>
+            <ChartContainer title="Gen Z Mobile Usage">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={genZMobileUsageData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis label={{ value: 'Percentage (%)', angle: -90, position: 'insideLeft' }} />
+                  <Tooltip formatter={(value) => `${value}%`} />
+                  <Legend />
+                  <Bar dataKey="value" fill="#8884d8" name="Percentage of Gen Z" />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartContainer>
+
+            <h3 className="text-2xl font-semibold text-gray-800 mb-4">Short Attention Span & Visual Preference</h3>
+            <p className="mb-4">
+              Gen Z is characterized by a notably short attention span and an exceptional capacity for processing vast amounts of visual content on a daily basis. They naturally gravitate towards photos, videos, memes, and short clips, finding platforms like TikTok and Instagram more intuitive for discovery and learning than traditional blogs or email newsletters. Their desire for visually immersive experiences demands the use of vibrant colors, high-quality imagery, and engaging typography in all digital interactions.
+            </p>
+            <p className="mb-4">
+              A critical observation from Gen Z's digital habits is their strong inclination towards entertainment-driven content, even for educational purposes. This generation primarily engages with social media for entertainment and scrolling, yet simultaneously leverages platforms like TikTok and YouTube as primary educational resources, favoring video-based learning. This blending of consumption habits suggests that for Ready Set Pasta, traditional, dry "how-to" cooking instructions, while informative, may not effectively capture Gen Z's attention or drive engagement. Instead, the content must be presented in an entertaining format. Recipes could be framed as quick, fun "hacks," viral challenges, or relatable "day-in-the-life" cooking snippets. The inherent efficiency of short-form video, which compels creators to distill complex concepts into immediately digestible segments, facilitates highly effective knowledge transfer for this demographic. Therefore, prioritizing rapid value delivery and strong visual appeal in all content is essential to align with Gen Z's learning preferences.
+            </p>
+            <ChartContainer title="Gen Z Learning Preferences">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={genZLearningPreferenceData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis label={{ value: 'Percentage (%)', angle: -90, position: 'insideLeft' }} />
+                  <Tooltip formatter={(value) => `${value}%`} />
+                  <Legend />
+                  <Bar dataKey="value" fill="#82ca9d" name="Percentage of Gen Z" />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartContainer>
+
+            <h3 className="text-2xl font-semibold text-gray-800 mb-4">Authenticity & Values-Driven Engagement</h3>
+            <p className="mb-4">
+              Gen Z places a high premium on authenticity, transparency, inclusivity, and sustainability. They demonstrate significantly more trust in real user-generated content (UGC) and testimonials compared to highly polished advertisements or celebrity endorsements. Brands that genuinely align with and visibly embody these values are far more likely to resonate with this audience and foster deeper engagement.
+            </p>
+            <p className="mb-4">
+              The confluence of Gen Z's skepticism towards traditional advertising and their strong desire for authenticity and peer connection drives them towards content validated by their social circles or trusted, relatable figures. This creates a self-reinforcing dynamic where social proof, such as user-generated content and micro-influencer endorsements, becomes a primary driver of both discovery and trust. This means Ready Set Pasta's acquisition strategy must heavily emphasize and facilitate social proof. Actively encouraging, curating, and showcasing user-generated content—for example, users sharing their "Ready Set Pasta" creations—and strategically leveraging micro-influencers for authentic endorsements are crucial. These endorsements should feel like genuine recommendations from a friend rather than overt sponsored content. Integrating reviews and testimonials prominently across all marketing touchpoints, including landing pages and social channels, will be critical for building credibility and driving conversions.
+            </p>
+
+            <h3 className="text-2xl font-semibold text-gray-800 mb-4">Interactive & Gamified Experiences</h3>
+            <p className="mb-4">
+              Engagement is a core driver for Gen Z, who prefer content they can actively tap, swipe, vote on, or play with. Interactive elements such as quizzes, polls, mini-games, and dynamic infographics are highly effective in capturing and sustaining their attention. Their comfort with natural gestures like swiping and pinching should be seamlessly integrated into the app's user interface design.
+            </p>
+
+            <h3 className="text-2xl font-semibold text-gray-800 mb-4">Social Media as Primary Discovery & Learning Tool</h3>
+            <p className="mb-4">
+              Social media serves as Gen Z's primary conduit for communication and product discovery. A significant 46% of this demographic utilizes social media over traditional search engines like Google or Bing for information gathering. TikTok stands out as the top platform for product discovery, with 77% of Gen Z using it to find new items, closely followed by Instagram and YouTube. For educational content, 87% prefer video-based learning, and 72% consume educational material via social media daily. They rely on short-form video for initial discovery and longer-form YouTube content for more in-depth product reviews.
+            </p>
+            <ChartContainer title="Gen Z Information Source">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={genZInfoSourceData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                  >
+                    {genZInfoSourceData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value) => `${value}%`} />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </ChartContainer>
+
+            <ChartContainer title="Gen Z Product Discovery Platforms">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={genZProductDiscoveryData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis label={{ value: 'Percentage (%)', angle: -90, position: 'insideLeft' }} />
+                  <Tooltip formatter={(value) => `${value}%`} />
+                  <Legend />
+                  <Bar dataKey="value" fill="#ffc658" name="Percentage of Gen Z" />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartContainer>
+
+            <h3 className="text-2xl font-semibold text-gray-800 mb-4">Convenience & Instant Gratification</h3>
+            <p className="mb-4">
+              Gen Z expects immediate results and rewards from digital interactions. Their busy lifestyles leave little time for extensive cooking or dining, leading to a strong preference for efficient online ordering, mobile payments, and integrated loyalty programs.
+            </p>
+
+            <h3 className="text-2xl font-semibold text-gray-800 mb-4">Personalization is Key</h3>
+            <p className="mb-4">
+              This generation demands highly personalized experiences tailored to their individual preferences, behaviors, and even location. They are accustomed to receiving customized recommendations, and artificial intelligence (AI) can be effectively leveraged to predict user preferences for targeted content and promotions.
+            </p>
+
+            <h3 className="text-2xl font-semibold text-gray-800 mb-4">Food Preferences</h3>
+            <p className="mb-4">
+              Gen Z is notably health-conscious, demonstrating a strong inclination towards plant-based, vegetarian, flexitarian, and functional foods. They prioritize sustainability and ethical sourcing, often willing to pay a premium for such options. Their adventurous palates seek bold, complex, and global flavors. Customization of meals is highly appealing, and for Gen Z, food is also a component of their personal brand, requiring it to be "recorded, enhanced, and disseminated" across their social networks.
+            </p>
+            <p className="mb-4">
+              For Gen Z, customization transcends mere preference; it is a fundamental expression of control and personal identity. Their food choices often reflect their values, such as health and sustainability, and contribute to their curated online persona. The ability to modify recipes, for instance, through ingredient substitutions within the 17-ingredient limit or dietary adjustments, allows them to align the app's offerings with their specific values and personal brand. This means Ready Set Pasta should prominently highlight its recipe flexibility and customization options in all marketing and in-app messaging. Features that enable users to easily swap ingredients (while adhering to the 17-ingredient maximum), adjust portion sizes, or filter by specific dietary needs (e.g., vegan, gluten-free, dairy-free) should be core to the app's value proposition and emphasized in marketing campaigns. This approach directly addresses their desire for "real-world application" in learning, as they can immediately apply lessons to their unique culinary needs and preferences, making the app feel personally relevant and empowering.
+            </p>
+
+            <h3 className="text-2xl font-semibold text-gray-800 mb-4">Gen Z Digital & Food Preferences: A Summary</h3>
+            <div className="overflow-x-auto">
+              <table className="min-w-full bg-white border border-gray-200 rounded-lg">
+                <thead>
+                  <tr className="bg-gray-100">
+                    <th className="py-3 px-4 border-b text-left text-sm font-semibold text-gray-600">Characteristic</th>
+                    <th className="py-3 px-4 border-b text-left text-sm font-semibold text-gray-600">Description & Implications for Ready Set Pasta</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="py-3 px-4 border-b">Mobile-First Orientation</td>
+                    <td className="py-3 px-4 border-b">Gen Z lives on smartphones; all digital touchpoints must prioritize mobile UX first.</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 border-b">Short Attention Span</td>
+                    <td className="py-3 px-4 border-b">Content must be concise, visually engaging, and deliver value quickly.</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 border-b">Visual Content Preference</td>
+                    <td className="py-3 px-4 border-b">High-quality images, short videos, and dynamic visuals are essential for engagement.</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 border-b">Authenticity & Values-Driven</td>
+                    <td className="py-3 px-4 border-b">Genuine content, UGC, and alignment with sustainability/inclusivity build trust.</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 border-b">Interactive & Gamified Experiences</td>
+                    <td className="py-3 px-4 border-b">Incorporate quizzes, polls, and swipeable content to boost engagement.</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 border-b">Social Media as Discovery & Learning Hub</td>
+                    <td className="py-3 px-4 border-b">Primary channels for marketing and educational content are TikTok, Instagram, YouTube.</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 border-b">Convenience & Instant Gratification</td>
+                    <td className="py-3 px-4 border-b">Streamlined onboarding, quick access to features, and fast load times are critical.</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 border-b">High Expectation for Personalization</td>
+                    <td className="py-3 px-4 border-b">Tailored recommendations and customizable features are highly valued.</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 border-b">Health-Conscious Food Choices</td>
+                    <td className="py-3 px-4 border-b">Emphasize plant-based, healthy, and functional food options in recipes.</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 border-b">Sustainability & Ethical Sourcing Importance</td>
+                    <td className="py-3 px-4 border-b">Highlight any sustainable practices or ingredient sourcing.</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 border-b">Desire for Bold & Global Flavors</td>
+                    <td className="py-3 px-4 border-b">Offer diverse and adventurous recipe options.</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 border-b">Customization in Meals</td>
+                    <td className="py-3 px-4 border-b">Allow users to easily modify ingredients, portions, and dietary filters.</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 border-b">Food as Personal Brand Content</td>
+                    <td className="py-3 px-4 border-b">Encourage and facilitate sharing of cooked meals on social media.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </Section>
+        );
+      case 'landing-pages':
+        return (
+          <Section id="landing-pages" title="Crafting High-Converting Mobile-First Landing Pages" icon={Layout}>
+            <p className="mb-4">
+              Given that the majority of Ready Set Pasta's traffic will originate from mobile phones and tablets, the design and functionality of its landing pages must be inherently mobile-first to ensure optimal user experience and maximize conversion rates.
+            </p>
+            <h3 className="text-2xl font-semibold text-gray-800 mb-4">Best Practices for Mobile-First Design, Concise Copy, CTA Placement, Speed, and User Experience Principles Tailored for Gen Z</h3>
+            <p className="mb-4">
+              The design process for Ready Set Pasta's landing pages should commence with mobile screens as the primary canvas, subsequently adapting the layout for larger desktop displays. This approach guarantees that the user experience (UX) is inherently optimized for smaller screens from the outset. Furthermore, Google's predominant use of mobile versions of websites for SEO ranking underscores the critical importance of this design philosophy.
+            </p>
+            <p className="mb-4">
+              Gen Z exhibits minimal patience for slow-loading digital experiences. Landing pages must achieve load times within 1-3 seconds, as bounce rates escalate significantly beyond this threshold. To achieve this, it is crucial to optimize load times through image compression and the use of lightweight code.
+            </p>
+            <p className="mb-4">
+              The limited screen real estate of mobile devices necessitates the use of shorter, abbreviated, and highly direct copy. "Walls of text" should be strictly avoided. Key information should be presented using easily digestible bullet points. Visually, the pages must leverage bold visuals, high-quality images, and engaging typography to immediately capture attention. Custom visuals that authentically reflect Ready Set Pasta's brand tone are strongly preferred over generic stock photos.
+            </p>
+            <p className="mb-4">
+              While mobile users are accustomed to scrolling, the optimal strategy involves placing the primary Call to Action (CTA) immediately visible "above the fold" without requiring any initial scrolling. CTAs should be designed with high-contrast colors to ensure they stand out prominently. Crucially, all buttons and navigation elements must be easily tappable and thumb-friendly for intuitive mobile interaction.
+            </p>
+            <p className="mb-4">
+              Gen Z users will quickly disengage from cluttered or confusing interfaces. The design should prioritize a minimalist, straightforward, and easy-to-navigate layout. Intrusive elements such as unnecessary pop-ups or obstructive advertisements that impede usability must be avoided. Implementing sticky navigation bars can enhance quick access to key functions.
+            </p>
+            <p className="mb-4">
+              Effective landing pages must adhere to core UX principles: they must be <i>useful</i> (fulfilling a specific need), <i>usable</i> (easy to interact with), <i>desirable</i> (evoking positive emotion through design), <i>findable</i> (content is easy to locate), <i>accessible</i> (inclusive for users with disabilities), and <i>credible</i> (providing proof of claims). For Ready Set Pasta, this means anticipating and accommodating the specific needs of busy Gen Z individuals who seek to cook healthy, quick meals with limited ingredients. Usability considerations include fast loading, the ability to pinch-to-zoom, large CTA buttons, small, digestible text blocks, and a minimum font size of 16px to ensure readability. Design should evoke positive emotions through minimalism and familiarity, aligning with the brand's overall communication. Credibility is enhanced by strategically integrating social proof, such as user reviews, testimonials, and user-generated content (UGC), throughout the page. Research indicates that 91% of millennials, a demographic with similar behaviors to Gen Z, trust reviews as much as recommendations from friends and family.
+            </p>
+            <p className="mb-4">
+              To maximize conversion rates, each landing page should focus on a single, clear conversion goal. For Ready Set Pasta, this might be a prominent "Start Free Trial" or "Sign Up for Recipes" button, avoiding multiple competing calls to action.
+            </p>
+            <p className="mb-4">
+              The confluence of Gen Z's low patience, demand for instant gratification, and mobile-first behavior means that the opportunity for conversion on a landing page exists within a very brief "micro-moment." If the user cannot immediately grasp the value proposition and identify the next desired action with minimal effort, they are highly likely to abandon the page. This necessitates an extreme level of efficiency and clarity in both design and content. Therefore, Ready Set Pasta's landing pages should be viewed not merely as informational pages but as <i>transactional accelerators</i>. Every element, from the headline to the initial visual, must be meticulously optimized to guide the user towards the desired action with the absolute minimum cognitive load. This implies highly visual, benefit-driven headlines, immediate and compelling social proof (e.g., "Join 10,000+ home cooks!"), and a single, prominently placed CTA. The user should experience and understand the core value proposition of "quick, easy cooking" instantly, making the decision to proceed almost automatic within that micro-moment.
+            </p>
+            <p className="mb-4">
+              For Gen Z, trust is fundamentally built through perceived authenticity. A landing page that appears "slick" or overly corporate but lacks genuine representation may be perceived as less trustworthy than one that feels more "real" and showcases actual users or relatable, everyday cooking scenarios. The visual aesthetic directly impacts credibility. Consequently, Ready Set Pasta's landing pages should feature visuals that resonate with Gen Z's desire for authenticity. This could involve prominently displaying user-generated content (e.g., photos or short videos of real users cooking Ready Set Pasta recipes), or using photography that mimics the style of content Gen Z sees on social media (e.g., candid, well-lit shots taken on a smartphone). The overall design should feel accessible and relatable, reinforcing credibility and desirability by showing real people achieving real results with the app, rather than relying on generic, aspirational imagery.
+            </p>
+            <p className="mb-4">
+              Gen Z has a strong preference for short, visual content for learning and information consumption. Landing pages require concise copy, often best delivered through bullet points. Ready Set Pasta's core offering is teaching "100+ recipes in 30 minutes or less with a 17-ingredient maximum." This highly specific, benefit-driven value proposition can be leveraged. The combination of these factors indicates that landing pages should act as "educational micro-content" hubs. Instead of extensive paragraphs, Ready Set Pasta should utilize short, engaging video clips (e.g., 15-30 second recipe demos), interactive elements (e.g., a mini-quiz like "What's your pasta personality?"), and visually striking infographics to convey key benefits. Each piece of content should quickly demonstrate how the app solves a Gen Z pain point (e.g., "Too busy to cook? See how in 30 seconds!") and reinforce the core value proposition. This approach aligns with their preference for quick, impactful learning and visual storytelling, making the landing page itself a demonstration of the app's efficiency.
+            </p>
+          </Section>
+        );
+      case 'acquisition-funnel':
+        return (
+          <Section id="acquisition-funnel" title="Customer Acquisition Funnel & Behavior for Ready Set Pasta" icon={TrendingUp}>
+            <p className="mb-4">
+              Understanding the customer acquisition funnel and Gen Z's behavior within it is paramount for Ready Set Pasta. This framework allows for strategic content delivery and optimization at each stage, guiding potential users from initial discovery to conversion and beyond.
+            </p>
+            <h3 className="text-2xl font-semibold text-gray-800 mb-4">Stages of the Customer Acquisition Funnel</h3>
+            <ul className="list-disc list-inside mb-4 space-y-2">
+              <li>
+                <strong>Awareness:</strong> This initial stage focuses on introducing potential customers to Ready Set Pasta. Efforts here aim to capture the attention of the target audience and make them aware of the web app's solution for quick, healthy cooking. This is achieved through broad marketing efforts like social media campaigns, content marketing (e.g., short videos, infographics), and targeted advertising.
+              </li>
+              <li>
+                <strong>Interest:</strong> Once awareness is established, the interest stage engages prospects by providing more detailed information about Ready Set Pasta's offerings. Content plays a significant role here, educating and engaging the audience. Email marketing, targeted content, and interactive tools are used to nurture interest.
+              </li>
+              <li>
+                <strong>Consideration & Evaluation:</strong> In this stage, prospects evaluate how Ready Set Pasta meets their needs compared to competitors. Detailed product information, comparisons, testimonials, and potentially free trials or demos are vital to building trust and demonstrating value.
+              </li>
+              <li>
+                <strong>Decision/Conversion:</strong> This is where prospects become customers by subscribing to the service. The focus is on making the purchase process as smooth and frictionless as possible, with clear calls-to-action, easy navigation, and multiple payment options.
+              </li>
+              <li>
+                <strong>Retention:</strong> The funnel extends beyond the initial conversion to encompass post-conversion behavior, focusing on retaining customers and fostering loyalty. This involves ongoing engagement, personalized experiences, and continuous value delivery.
+              </li>
+            </ul>
+
+            <h3 className="text-2xl font-semibold text-gray-800 mb-4">Optimizing the Funnel for Gen Z</h3>
+            <ul className="list-disc list-inside mb-4 space-y-2">
+              <li>
+                <strong>User Personas:</strong> Developing detailed user personas is crucial. These should consider demographic profiles, goals, motivations, current pain points (e.g., lack of time, limited ingredients, difficulty cooking), overall character, and main tasks they wish to achieve. This helps ensure content is directed to the correct audience and provides sufficient value.
+              </li>
+              <li>
+                <strong>Content Relevancy:</strong> Messages must be highly relevant and tailored to niche audiences at each funnel stage.
+                <ul className="list-circle list-inside ml-6 mt-2">
+                  <li>
+                    <strong>Awareness (TOFU):</strong> Content should be educational and engaging, such as blog posts, short videos, and guides that address common cooking challenges for Gen Z (e.g., "5-Minute Meals for Busy Students," "Mastering Pasta with Limited Ingredients"). This is about making an amazing initial offer.
+                  </li>
+                  <li>
+                    <strong>Consideration (MOFU):</strong> Content should demonstrate value and solutions, including tutorials, demos of the app's features, and comparisons highlighting Ready Set Pasta's unique selling points (e.g., "Ready Set Pasta vs. Traditional Recipe Sites: Cook Faster, Eat Healthier").
+                  </li>
+                  <li>
+                    <strong>Conversion (BOFU):</strong> Content should focus on direct value proposition and social proof, such as user reviews, testimonials, and clear calls to action to subscribe.
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <strong>Seamless User Journey:</strong> The entire path a user takes, from first contact to conversion and retention, must be seamless. Identifying drop-off points using analytics tools is critical to address issues causing disengagement.
+              </li>
+              <li>
+                <strong>Adaptive Onboarding:</strong> For a web app, adaptive onboarding is key to reducing churn and speeding up time-to-value. If a user quickly navigates to a specific recipe type or skips initial goal-setting, the app should dynamically adjust the experience, perhaps by simplifying the UI or offering immediate guidance relevant to their apparent interest. This personalized approach, informed by behavioral data, can significantly improve conversion rates and decrease the time it takes for users to realize the app's value.
+              </li>
+              <li>
+                <strong>Gamification and Community:</strong> Integrating lightweight social layers and gamification into the core app experience can significantly boost retention. This could involve shared cooking challenges, passive group goals, or cohort-based nudges within the app. For example, users could earn "chef badges" for completing a certain number of recipes or sharing their creations. Integrating with platforms like Discord or Telegram for structured discussion prompts or sharing statistics can foster a sense of community.
+              </li>
+              <li>
+                <strong>Smarter Push Notifications:</strong> Push notifications should be context-aware and personalized, reflecting the user's current state rather than generic reminders. For instance, if a user hasn't cooked in a few days, a message like, "Missed cooking? We've saved a quick 15-minute recipe for you!" could be effective. Matching the tone of the message to the user's likely emotional state can yield significantly higher click-through rates.
+              </li>
+            </ul>
+          </Section>
+        );
+      case 'cpc':
+        return (
+          <Section id="cpc" title="Cost Per Click (CPC) for Online Cooking Education Web App" icon={DollarSign}>
+            <p className="mb-4">
+              Understanding the average Cost Per Click (CPC) is crucial for budgeting and optimizing paid acquisition campaigns for Ready Set Pasta. CPC represents the amount paid for each click on an advertisement. It is calculated by dividing the total cost of clicks by the total number of clicks.
+            </p>
+            <h3 className="text-2xl font-semibold text-gray-800 mb-4">Industry Benchmarks for CPC</h3>
+            <p className="mb-4">
+              Ready Set Pasta, as a web app teaching cooking, falls into several industry categories for CPC benchmarking, including "Education," "E-commerce," and "Restaurants & Food."
+            </p>
+
+            <ChartContainer title="Education Industry CPC">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={cpcEducationData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis label={{ value: 'CPC ($)', angle: -90, position: 'insideLeft' }} />
+                  <Tooltip formatter={(value) => `$${value.toFixed(2)}`} />
+                  <Legend />
+                  <Bar dataKey="value" fill="#8884d8" name="Average CPC" />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartContainer>
+
+            <ChartContainer title="E-Commerce Industry CPC">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={cpcEcommerceData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis label={{ value: 'CPC ($)', angle: -90, position: 'insideLeft' }} />
+                  <Tooltip formatter={(value) => `$${value.toFixed(2)}`} />
+                  <Legend />
+                  <Bar dataKey="value" fill="#82ca9d" name="Average CPC" />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartContainer>
+
+            <ChartContainer title="Restaurants & Food Industry CPC">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={cpcRestaurantsFoodData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis label={{ value: 'CPC ($)', angle: -90, position: 'insideLeft' }} />
+                  <Tooltip formatter={(value) => `$${value.toFixed(2)}`} />
+                  <Legend />
+                  <Bar dataKey="value" fill="#ffc658" name="Average CPC" />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartContainer>
+
+            <ChartContainer title="General Mobile Advertising Platforms CPC">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={cpcGeneralMobileData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis label={{ value: 'CPC ($)', angle: -90, position: 'insideLeft' }} />
+                  <Tooltip formatter={(value) => `$${value.toFixed(2)}`} />
+                  <Legend />
+                  <Bar dataKey="value" fill="#a4de6c" name="Average CPC" />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartContainer>
+
+            <p className="mb-4">
+              Considering Ready Set Pasta's nature as an educational web app in the food domain, a blended average CPC for search campaigns (Google/Facebook) would likely fall in the range of <strong>$1.50 - $2.50</strong>, while display network and social media platform CPCs would be considerably lower, typically <strong>$0.40 - $0.80</strong>. These figures serve as a guide for initial budgeting and campaign optimization, recognizing that actual CPC can fluctuate based on targeting, ad quality, competition, and seasonality.
+            </p>
+            <ChartContainer title="Blended Average CPC for Ready Set Pasta">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={cpcBlendedData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis label={{ value: 'CPC ($)', angle: -90, position: 'insideLeft' }} />
+                  <Tooltip formatter={(value) => `$${value.toFixed(2)}`} />
+                  <Legend />
+                  <Bar dataKey="value" fill="#8dd1e1" name="Average CPC" />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartContainer>
+          </Section>
+        );
+      case 'cac-ltv':
+        return (
+          <Section id="cac-ltv" title="Achieving a CAC:LTV Ratio of 3.5:1" icon={Target}>
+            <p className="mb-4">
+              A Customer Acquisition Cost (CAC) to Lifetime Value (LTV) ratio of 3.5:1 is a strong indicator of business health and sustainability for a subscription-based web app like Ready Set Pasta. This ratio signifies that for every dollar spent acquiring a customer, the business generates $3.50 in lifetime value from that customer. Achieving this target requires a dual focus: both reducing CAC and increasing LTV.
+            </p>
+            <h3 className="text-2xl font-semibold text-gray-800 mb-4">Strategies to Reduce Customer Acquisition Cost (CAC)</h3>
+            <p className="mb-4">
+              CAC is the total cost involved in acquiring new customers, including marketing expenses, sales team compensation, technology stack costs, agency fees, and overhead. To optimize CAC for Ready Set Pasta:
+            </p>
+            <ul className="list-disc list-inside mb-4 space-y-2">
+              <li>
+                <strong>Niche Down & Research:</strong> Focus acquisition efforts on the most valuable customer segments within Gen Z. Deep customer research to understand motivations, pain points, and buying journeys is essential. This precision targeting reduces wasted ad spend on irrelevant audiences.
+              </li>
+              <li>
+                <strong>Leverage Organic Channels:</strong> Prioritize content marketing and social media marketing to generate awareness and interest organically. Creating educational and interesting short video clips, infographics, and articles relevant to Gen Z's cooking challenges can attract users without direct ad spend.
+              </li>
+              <li>
+                <strong>Micro-Influencer Marketing:</strong> Partnering with micro-influencers (10,000-100,000 followers) is highly effective for Gen Z due to their authenticity and high engagement rates. These collaborations are more affordable than celebrity endorsements and build trust through relatable content. For Ready Set Pasta, this means working with home cooks or food bloggers who genuinely use and recommend the app, perhaps through mini-tutorials or lifestyle integrations.
+              </li>
+              <li>
+                <strong>Optimized Ad Creatives:</strong> Continuously A/B test ad copy, visuals, and calls-to-action to identify what resonates best with the target audience, leading to higher click-through rates and lower CPC. Video ads, optimized for mobile and showcasing the app in action, are particularly effective for capturing Gen Z's attention and driving installs. AI-powered insights can help identify high-performing creatives and combat ad fatigue.
+              </li>
+              <li>
+                <strong>App Store Optimization (ASO):</strong> For a web app with mobile-first landing pages, ASO principles apply to how the app is presented in search results and app-like environments. Optimizing titles, descriptions, keywords, and visuals (screenshots, preview videos) can improve discoverability and attract high-value users organically.
+              </li>
+              <li>
+                <strong>Referral Programs:</strong> Incentivize existing satisfied users to refer new ones. Offering discounts, free months, or loyalty points for successful referrals can be a cost-effective acquisition channel, leveraging word-of-mouth marketing which is highly trusted by Gen Z.
+              </li>
+            </ul>
+
+            <h3 className="text-2xl font-semibold text-gray-800 mb-4">Strategies to Increase Customer Lifetime Value (LTV)</h3>
+            <p className="mb-4">
+              LTV is the total revenue a customer is expected to generate over their relationship with the business, minus acquisition and retention costs. Increasing LTV is critical for a healthy ratio.
+            </p>
+            <ul className="list-disc list-inside mb-4 space-y-2">
+              <li>
+                <strong>Product Onboarding Optimization:</strong> A smooth and effective onboarding process is crucial for converting new users into loyal customers and reducing early churn. This involves guiding users through the app's core features, demonstrating immediate value (e.g., helping them cook their first 30-minute meal), and providing clear instructions. Adaptive onboarding, which adjusts the user's initial experience based on their behavior, can reduce day-one churn by 20-35%.
+              </li>
+              <li>
+                <strong>Personalized Experiences:</strong> Gen Z values personalization highly. Ready Set Pasta should leverage user data to offer personalized recipe recommendations, customizable interfaces, and tailored content. This could include suggesting recipes based on past cooking history, dietary preferences, or even available ingredients, making the app feel uniquely relevant to each user.
+              </li>
+              <li>
+                <strong>Gamification & Interactive Content:</strong> Incorporate interactive elements like quizzes, polls, and mini-games to enhance engagement and keep users on the app longer. Rewarding users for completing recipes, tracking cooking streaks, or unlocking new recipe categories can foster habit formation and loyalty.
+              </li>
+              <li>
+                <strong>Robust Loyalty Programs:</strong> Implement in-app loyalty programs that reward repeat engagement and long-term subscription. This could involve points for cooking recipes, sharing content, or referring friends, redeemable for exclusive content, discounts, or premium features. Surprise rewards at key milestones can strengthen emotional connection.
+              </li>
+              <li>
+                <strong>Strategic Push Notifications & In-App Messaging:</strong> Utilize push notifications and in-app messages strategically to re-engage users and provide value. These should be personalized, timely, and relevant, avoiding overwhelming users with excessive or irrelevant alerts. Examples include reminders for unfinished recipes, notifications about new 30-minute recipes, or exclusive offers.
+              </li>
+              <li>
+                <strong>Subscription Management Flexibility:</strong> Provide users with intuitive tools to manage their subscriptions directly within the app, including options to pause, skip, or modify delivery frequency (if applicable for future ingredient kits). This flexibility can prevent cancellations by allowing users to adapt the service to their changing needs.
+              </li>
+              <li>
+                <strong>Continuous Content Updates & Feature Enhancements:</strong> For a recipe app, "staleness kills". Regularly update content with new recipes, features, and improvements based on user feedback and consumption patterns. Showcasing competitive advantages and continuously delivering value encourages long-term retention.
+              </li>
+              <li>
+                <strong>Exceptional Customer Support:</strong> Make it easy for users to report bugs or provide feedback in-app. Promptly addressing issues and demonstrating that user opinions matter builds trust and fosters long-term loyalty.
+              </li>
+              <li>
+                <strong>Pricing Optimization:</strong> While not always the first step, strategically increasing prices can directly impact LTV, provided the value proposition remains strong and competitive. Experimenting with tiered subscription models (e.g., freemium with premium upgrades) can also cater to different user segments and incentivize higher-value engagement.
+              </li>
+            </ul>
+          </Section>
+        );
+      case 'strategy':
+        return (
+          <Section id="strategy" title="Complete Strategy with Milestones, Goals, and Trackable Steps" icon={CheckCircle}>
+            <p className="mb-4">
+              The acquisition strategy for Ready Set Pasta will be structured around SMART (Specific, Measurable, Achievable, Relevant, Time-bound) goals, ensuring clear objectives and trackable progress.
+            </p>
+            <h3 className="text-2xl font-semibold text-gray-800 mb-4">Phase 1: Foundation & Initial Launch (Months 1-3)</h3>
+            <p className="mb-2"><strong>Goal:</strong> Establish a strong mobile-first presence and acquire initial Gen Z users, validating core value proposition.</p>
+            <ul className="list-disc list-inside mb-4 space-y-2">
+              <li>
+                <strong>Milestone 1.1: Mobile-First Landing Page & Web App Readiness (Month 1)</strong>
+                <ul className="list-circle list-inside ml-6 mt-1">
+                  <li><strong>Objective:</strong> Develop and optimize high-converting mobile-first landing pages and ensure the web app delivers a seamless, fast, and intuitive experience on mobile devices.</li>
+                  <li><strong>Trackable Steps:</strong>
+                    <ul className="list-square list-inside ml-8 mt-1">
+                      <li>Complete mobile-first design and development of core landing pages (e.g., homepage, sign-up, recipe categories).</li>
+                      <li>Optimize page load times to under 3 seconds on mobile networks.</li>
+                      <li>Implement clear, high-contrast CTAs above the fold.</li>
+                      <li>Integrate initial social proof (e.g., early user testimonials, beta tester feedback).</li>
+                      <li>Ensure intuitive, thumb-friendly navigation and minimalist interface.</li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <strong>Milestone 1.2: Social Media & Micro-Influencer Program Setup (Month 2)</strong>
+                <ul className="list-circle list-inside ml-6 mt-1">
+                  <li><strong>Objective:</strong> Establish active social media channels (TikTok, Instagram, YouTube) and identify initial micro-influencer partners for authentic content.</li>
+                  <li><strong>Trackable Steps:</strong>
+                    <ul className="list-square list-inside ml-8 mt-1">
+                      <li>Create business accounts on TikTok, Instagram, and YouTube.</li>
+                      <li>Develop a content calendar focused on short, entertaining, and educational video recipes (e.g., "30-Minute Pasta Hacks").</li>
+                      <li>Identify and outreach to 5-10 micro-influencers in the cooking/lifestyle niche (10k-100k followers).</li>
+                      <li>Develop initial content collaboration ideas (e.g., product gifting, mini-tutorials).</li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <strong>Milestone 1.3: Initial User Acquisition & Feedback Loop (Month 3)</strong>
+                <ul className="list-circle list-inside ml-6 mt-1">
+                  <li><strong>Objective:</strong> Drive initial traffic, acquire first 1,000 active users, and establish mechanisms for user feedback.</li>
+                  <li><strong>Trackable Steps:</strong>
+                    <ul className="list-square list-inside ml-8 mt-1">
+                      <li>Launch targeted social media ad campaigns (TikTok, Instagram) with a focus on video creatives and compelling offers.</li>
+                      <li>Implement basic analytics tracking for CAC, initial conversion rates, and user engagement (DAU/MAU).</li>
+                      <li>Conduct A/B tests on landing page elements and ad creatives.</li>
+                      <li>Integrate in-app surveys and feedback widgets to gather user pain points and preferences.</li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+
+            <h3 className="text-2xl font-semibold text-gray-800 mb-4">Phase 2: Optimization & Growth (Months 4-9)</h3>
+            <p className="mb-2"><strong>Goal:</strong> Optimize acquisition channels, improve LTV:CAC ratio, and scale user base.</p>
+            <ul className="list-disc list-inside mb-4 space-y-2">
+              <li>
+                <strong>Milestone 2.1: LTV:CAC Ratio Improvement (Month 4-6)</strong>
+                <ul className="list-circle list-inside ml-6 mt-1">
+                  <li><strong>Objective:</strong> Implement strategies to reduce CAC and increase LTV, aiming for a 2.5:1 ratio.</li>
+                  <li><strong>Trackable Steps:</strong>
+                    <ul className="list-square list-inside ml-8 mt-1">
+                      <li>Analyze acquisition channel performance; reallocate budget to highest-performing channels (e.g., those with lower CPC, higher conversion rates).</li>
+                      <li>Refine onboarding flow based on user feedback and drop-off analysis.</li>
+                      <li>Introduce initial personalization features (e.g., recipe recommendations based on viewed content).</li>
+                      <li>Launch a basic in-app loyalty program (e.g., "cook 5 recipes, get exclusive content").</li>
+                      <li>Implement smart push notifications for re-engagement based on user inactivity or completed recipes.</li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <strong>Milestone 2.2: Content & Community Expansion (Month 7-9)</strong>
+                <ul className="list-circle list-inside ml-6 mt-1">
+                  <li><strong>Objective:</strong> Deepen user engagement through expanded content and community features, driving organic growth.</li>
+                  <li><strong>Trackable Steps:</strong>
+                    <ul className="list-square list-inside ml-8 mt-1">
+                      <li>Increase frequency of user-generated content campaigns and feature user submissions prominently.</li>
+                      <li>Experiment with interactive content formats (e.g., "Cook-Along Challenges," polls for new recipes).</li>
+                      <li>Explore community building initiatives (e.g., a dedicated Discord channel for recipe sharing and tips).</li>
+                      <li>Refine micro-influencer partnerships for longer-term, authentic collaborations.</li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <strong>Milestone 2.3: Target LTV:CAC of 3.5:1 (End of Month 9)</strong>
+                <ul className="list-circle list-inside ml-6 mt-1">
+                  <li><strong>Objective:</strong> Achieve a sustainable LTV:CAC ratio of 3.5:1.</li>
+                  <li><strong>Trackable Steps:</strong>
+                    <ul className="list-square list-inside ml-8 mt-1">
+                      <li>Continuously monitor CAC and LTV metrics across all cohorts.</li>
+                      <li>Adjust pricing models or introduce premium features based on LTV analysis and user value perception.</li>
+                      <li>Implement churn reduction strategies, including proactive communication and flexible subscription management.</li>
+                      <li>Conduct in-depth churn analysis through exit surveys to understand reasons for departure.</li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+
+            <h3 className="text-2xl font-semibold text-gray-800 mb-4">Phase 3: Scaling & Long-Term Retention (Months 10-12+)</h3>
+            <p className="mb-2"><strong>Goal:</strong> Sustain growth, maximize customer lifetime value, and establish Ready Set Pasta as a market leader.</p>
+            <ul className="list-disc list-inside mb-4 space-y-2">
+              <li>
+                <strong>Milestone 3.1: Advanced Personalization & AI Integration (Month 10-12)</strong>
+                <ul className="list-circle list-inside ml-6 mt-1">
+                  <li><strong>Objective:</strong> Leverage advanced data analytics and AI to hyper-personalize the user experience and predict churn.</li>
+                  <li><strong>Trackable Steps:</strong>
+                    <ul className="list-square list-inside ml-8 mt-1">
+                      <li>Implement AI-driven personalized meal recommendations based on user preferences and dietary goals.</li>
+                      <li>Utilize predictive analytics to identify at-risk users and trigger targeted win-back campaigns.</li>
+                      <li>Automate lifecycle campaigns that react to specific user activity (e.g., rewarding frequent users, re-engaging inactive ones).</li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <strong>Milestone 3.2: Diversified Acquisition & Retention Channels (Ongoing)</strong>
+                <ul className="list-circle list-inside ml-6 mt-1">
+                  <li><strong>Objective:</strong> Explore new acquisition channels and strengthen retention across all touchpoints.</li>
+                  <li><strong>Trackable Steps:</strong>
+                    <ul className="list-square list-inside ml-8 mt-1">
+                      <li>Investigate strategic partnerships beyond micro-influencers (e.g., food bloggers, complementary apps).</li>
+                      <li>Continuously A/B test new ad formats (e.g., playable ads, AR experiences).</li>
+                      <li>Expand loyalty program tiers and referral incentives.</li>
+                      <li>Maintain a high standard of customer service and actively solicit feedback for continuous product improvement.</li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+
+            <h3 className="text-2xl font-semibold text-gray-800 mb-4">Key Performance Indicators (KPIs) for Tracking Success</h3>
+            <p className="mb-4">
+              Monitoring specific KPIs is essential to assess the effectiveness of the acquisition plan and make data-driven decisions.
+            </p>
+            <ul className="list-disc list-inside mb-4 space-y-2">
+              <li>
+                <strong>Acquisition KPIs:</strong>
+                <ul className="list-circle list-inside ml-6 mt-1">
+                  <li><strong>Customer Acquisition Cost (CAC):</strong> Total cost of acquiring new users divided by the number of new customers.</li>
+                  <li><strong>Install-to-Registration Rate:</strong> Percentage of users who register after installing/accessing the web app.</li>
+                  <li><strong>User Growth Rate:</strong> Measures the expansion of the user base over time.</li>
+                  <li><strong>Cost Per Click (CPC):</strong> Average cost for each click on an ad.</li>
+                  <li><strong>Conversion Rate (CVR):</strong> Percentage of clicks that result in a desired action (e.g., subscription).</li>
+                </ul>
+              </li>
+              <li>
+                <strong>Engagement & Retention KPIs:</strong>
+                <ul className="list-circle list-inside ml-6 mt-1">
+                  <li><strong>Daily Active Users (DAU) / Monthly Active Users (MAU):</strong> Measures daily and monthly engagement levels.</li>
+                  <li><strong>Stickiness Ratio (DAU/MAU):</strong> Indicates how frequently monthly users engage with the app, showing habitual usage.</li>
+                  <li><strong>Session Length & Frequency:</strong> Duration users spend in the app and how often they return.</li>
+                  <li><strong>User Retention Rate:</strong> Percentage of users who return to the app after their initial visit within specific timeframes.</li>
+                  <li><strong>Churn Rate:</strong> Percentage of users who stop engaging with or cancel their subscription over time.</li>
+                  <li><strong>Subscription Renewal Rate:</strong> Percentage of users who renew their subscriptions.</li>
+                </ul>
+              </li>
+              <li>
+                <strong>Financial KPIs:</strong>
+                <ul className="list-circle list-inside ml-6 mt-1">
+                  <li><strong>Customer Lifetime Value (LTV):</strong> Total profit expected from a customer over their lifetime.</li>
+                  <li><strong>LTV:CAC Ratio:</strong> Compares lifetime value to acquisition cost, indicating profitability and ROI.</li>
+                  <li><strong>Monthly Recurring Revenue (MRR) / Annual Recurring Revenue (ARR):</strong> Total recurring revenue from subscriptions.</li>
+                </ul>
+              </li>
+            </ul>
+            <p className="mb-4">
+              Regularly reviewing and updating the funnel based on new data, user feedback, and changing market conditions is essential, as conversion funnels are not static. Leveraging visual tools like funnel charts and heatmaps can provide a better understanding of user behavior and identify bottlenecks.
+            </p>
+          </Section>
+        );
+      case 'conclusion':
+        return (
+          <Section id="conclusion" title="Conclusions & Recommendations" icon={CheckCircle}>
+            <p className="mb-4">
+              Ready Set Pasta's success hinges on a deeply integrated mobile-first strategy that resonates with Gen Z's unique digital and culinary inclinations. The analysis reveals that this generation expects more than just functional utility; they demand entertainment, authenticity, personalization, and community in their digital experiences, especially when it comes to food and learning.
+            </p>
+            <p className="mb-4">
+              The average CPC for an online cooking education web app, drawing from "Education," "E-commerce," and "Restaurants & Food" benchmarks, is estimated to be in the range of <strong>$1.50 - $2.50 for search campaigns</strong> and <strong>$0.40 - $0.80 for display and social media campaigns</strong>. These figures should guide initial budgeting, but continuous A/B testing and optimization are crucial for maximizing ad efficiency.
+            </p>
+            <p className="mb-4">
+              To achieve the target CAC:LTV ratio of 3.5:1, Ready Set Pasta must implement a dual-pronged approach:
+            </p>
+            <ol className="list-decimal list-inside mb-4 space-y-2">
+              <li>
+                <strong>Reduce CAC through Precision and Authenticity:</strong> Focus on highly targeted campaigns leveraging organic social media content and micro-influencer partnerships, which offer higher credibility and engagement at a lower cost than traditional advertising. Optimizing mobile-first landing pages for speed and clarity will also convert more effectively, reducing the cost per acquired user.
+              </li>
+              <li>
+                <strong>Increase LTV through Engagement and Personalization:</strong> A robust onboarding process, continuous delivery of fresh, personalized, and interactive content, and the implementation of gamified loyalty programs are paramount. Proactive churn reduction strategies, including flexible subscription management and context-aware push notifications, will ensure users remain engaged and continue their subscriptions.
+              </li>
+            </ol>
+            <h3 className="text-2xl font-semibold text-gray-800 mb-4">Overall Recommendations for Ready Set Pasta:</h3>
+            <ul className="list-disc list-inside mb-4 space-y-2">
+              <li>
+                <strong>Prioritize Entertainment-Driven Learning:</strong> Reframe recipe content as engaging, short-form video "hacks" or challenges for social platforms (TikTok, Instagram, YouTube), making learning feel organic and fun.
+              </li>
+              <li>
+                <strong>Amplify Peer Validation:</strong> Actively solicit and prominently feature user-generated content (UGC) and testimonials. Cultivate authentic relationships with micro-influencers who genuinely use and advocate for Ready Set Pasta.
+              </li>
+              <li>
+                <strong>Champion Customization:</strong> Highlight the app's flexibility in recipe modification (e.g., ingredient swaps, dietary filters, portion adjustments) as a core value proposition, empowering users to align cooking with their personal brand and values.
+              </li>
+              <li>
+                <strong>Optimize Every Mobile Touchpoint:</strong> Ensure all landing pages and the web app itself are designed mobile-first, load within 1-3 seconds, feature concise copy, and have clear, above-the-fold calls to action.
+              </li>
+              <li>
+                <strong>Implement a Data-Driven Growth Loop:</strong> Continuously track CAC, LTV, engagement metrics (DAU/MAU, session length), and churn rates. Use these insights to refine acquisition channels, personalize user experiences, and proactively address potential drop-off points.
+              </li>
+              <li>
+                <strong>Foster Community:</strong> Integrate lightweight social features and gamification within the app to encourage shared experiences and build a sense of belonging among users.
+              </li>
+            </ul>
+            <p className="mb-4">
+              By meticulously executing these recommendations, Ready Set Pasta can effectively acquire and retain its Gen Z target audience, establishing a sustainable and profitable business model in the dynamic online culinary education space.
+            </p>
+          </Section>
+        );
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-100 font-sans text-gray-900 antialiased">
+      <style>
+        {`
+          @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+          body { font-family: 'Inter', sans-serif; }
+          .list-circle li::before {
+            content: '•';
+            color: #4f46e5; /* Indigo-600 */
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+          }
+          .list-square li::before {
+            content: '▪';
+            color: #10b981; /* Emerald-500 */
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+          }
+        `}
+      </style>
+      <header className="bg-indigo-700 text-white p-4 shadow-md sticky top-0 z-50">
+        <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
+          <h1 className="text-3xl font-bold mb-2 md:mb-0">Ready Set Pasta: Acquisition Plan</h1>
+          <nav className="flex flex-wrap justify-center md:justify-end gap-2 text-sm">
+            {sections.map((section) => (
+              <a
+                key={section.id}
+                href={`#${section.id}`}
+                onClick={() => navigateTo(section.id)}
+                className={`flex items-center px-3 py-2 rounded-lg transition-colors duration-200
+                  ${activeSection === section.id ? 'bg-indigo-800 text-white shadow-inner' : 'hover:bg-indigo-600'}
+                `}
+              >
+                <section.icon className="w-4 h-4 mr-2" />
+                {section.title}
+              </a>
+            ))}
+          </nav>
+        </div>
+      </header>
+
+      <main className="container mx-auto p-4 py-8">
+        {renderContent()}
+      </main>
+
+      <footer className="bg-gray-800 text-white p-6 text-center mt-12 rounded-t-xl">
+        <p>&copy; {new Date().getFullYear()} Ready Set Pasta. All rights reserved.</p>
+        <p className="text-sm mt-2">Acquisition Plan developed by Gemini AI.</p>
+      </footer>
+    </div>
+  );
+};
+
+export default App;
